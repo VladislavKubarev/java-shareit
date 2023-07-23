@@ -1,43 +1,33 @@
 package ru.practicum.shareit.item.storage;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.storage.InMemoryUserStorage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Component
+@Repository
 @RequiredArgsConstructor
 public class InMemoryItemStorage implements ItemStorage {
     private final HashMap<Long, Item> allItem;
-    private final InMemoryUserStorage inMemoryUserStorage;
-    private final ItemMapper itemMapper;
     private long actualId = 0;
 
     @Override
-    public ItemDto createItem(long userId, Item item) {
-        if (inMemoryUserStorage.getUserById(userId) == null) {
-            throw new NotFoundException("Пользователь не найден!");
-        }
+    public Item createItem(Item item) {
         item.setId(++actualId);
-        item.setUserId(userId);
         allItem.put(item.getId(), item);
 
-        return itemMapper.toItemDto(item);
+        return item;
     }
 
     @Override
-    public ItemDto updateItem(Item item, long itemId, long userId) {
+    public Item updateItem(Item item, long itemId, long userId) {
         Item updatedItem = allItem.get(itemId);
 
-        if (updatedItem.getUserId() != userId) {
+        if (updatedItem.getOwner().getId() != userId) {
             throw new NotFoundException("Пользователь не является хозяином этой вещи!");
         }
         if (item.getName() != null) {
@@ -50,29 +40,29 @@ public class InMemoryItemStorage implements ItemStorage {
             updatedItem.setAvailable(item.getAvailable());
         }
 
-        return itemMapper.toItemDto(updatedItem);
+        return updatedItem;
     }
 
     @Override
-    public ItemDto getItemById(long itemId) {
-        return itemMapper.toItemDto(allItem.get(itemId));
+    public Item getItemById(long itemId) {
+        return allItem.get(itemId);
     }
 
     @Override
-    public List<ItemDto> getItemsByUser(long userId) {
+    public List<Item> getItemsByUser(long userId) {
         List<Item> itemsByUser = new ArrayList<>();
 
         for (Item item : allItem.values()) {
-            if (item.getUserId() == userId) {
+            if (item.getOwner().getId() == userId) {
                 itemsByUser.add(item);
             }
         }
 
-        return itemsByUser.stream().map(itemMapper::toItemDto).collect(Collectors.toList());
+        return itemsByUser;
     }
 
     @Override
-    public List<ItemDto> searchItem(String text) {
+    public List<Item> searchItem(String text) {
         List<Item> foundItems = new ArrayList<>();
 
         if (text.isBlank()) {
@@ -80,12 +70,12 @@ public class InMemoryItemStorage implements ItemStorage {
         }
         for (Item item : allItem.values()) {
             if (item.getAvailable()) {
-                if (item.getDescription().toLowerCase().contains(text.toLowerCase())) {
+                if (item.getDescription().toLowerCase().contains(text)) {
                     foundItems.add(item);
                 }
             }
         }
 
-        return foundItems.stream().map(itemMapper::toItemDto).collect(Collectors.toList());
+        return foundItems;
     }
 }

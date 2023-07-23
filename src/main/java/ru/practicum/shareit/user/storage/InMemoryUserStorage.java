@@ -1,45 +1,42 @@
 package ru.practicum.shareit.user.storage;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.DuplicateEmailException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Component
+@Repository
 @RequiredArgsConstructor
 public class InMemoryUserStorage implements UserStorage {
     private final HashMap<Long, User> allUsers;
-    private final UserMapper userMapper;
     private long actualId = 0;
 
     @Override
-    public UserDto createUser(User user) {
+    public User createUser(User user) {
         duplicateValidation(user, user.getId());
         user.setId(++actualId);
         allUsers.put(user.getId(), user);
 
-        return userMapper.toUserDto(user);
+        return user;
     }
 
     @Override
-    public List<UserDto> showAllUsers() {
-        return allUsers.values().stream().map(userMapper::toUserDto).collect(Collectors.toList());
+    public List<User> showAllUsers() {
+        return new ArrayList<>(allUsers.values());
     }
 
     @Override
-    public UserDto getUserById(long userId) {
+    public User getUserById(long userId) {
         if (!allUsers.containsKey(userId)) {
             throw new NotFoundException("Пользователь не найден!");
         }
 
-        return userMapper.toUserDto(allUsers.get(userId));
+        return allUsers.get(userId);
     }
 
     @Override
@@ -48,7 +45,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public UserDto updateUser(User user, long userId) {
+    public User updateUser(User user, long userId) {
         duplicateValidation(user, userId);
         User updatedUser = allUsers.get(userId);
 
@@ -59,7 +56,7 @@ public class InMemoryUserStorage implements UserStorage {
             updatedUser.setName(user.getName());
         }
 
-        return userMapper.toUserDto(updatedUser);
+        return updatedUser;
     }
 
     private void duplicateValidation(User user, long userId) {

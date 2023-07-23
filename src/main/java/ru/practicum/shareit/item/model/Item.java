@@ -1,20 +1,16 @@
 package ru.practicum.shareit.item.model;
 
+import lombok.Builder;
 import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import ru.practicum.shareit.user.model.User;
 
 @Data
+@Builder
 public class Item {
     private long id;
-    private long userId;
-    @NotBlank(message = "Имя не может быть пустым!")
     private String name;
-    @NotBlank(message = "Описание не может быть пустым!")
     private String description;
-    @NotNull(message = "Статус не может быть пустым!")
     private Boolean available;
-    private String owner;
+    private User owner;
     private String request;
 }
