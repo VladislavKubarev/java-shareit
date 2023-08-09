@@ -3,6 +3,7 @@ package ru.practicum.shareit.user.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 
 @Entity
@@ -31,6 +32,6 @@ public class User {
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Objects.hash(getId());
     }
 }

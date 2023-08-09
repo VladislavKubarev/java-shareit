@@ -89,14 +89,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemWithBookingAndCommentsDto> findItemsByUser(long userId) {
-        return itemRepository.findByOwnerId(userId).stream().map(item -> {
-            ItemWithBookingAndCommentsDto itemWithBookingAndCommentsDto = itemMapper.itemWithBookingAndCommentsDto(item);
-            itemWithBookingAndCommentsDto.setNextBooking(getNextBooking(item.getId()));
-            itemWithBookingAndCommentsDto.setLastBooking(getLastBooking(item.getId()));
-            itemWithBookingAndCommentsDto.setComments(getCommentByItemId(item.getId()));
-
-            return itemWithBookingAndCommentsDto;
-        }).sorted(Comparator.comparing(ItemWithBookingAndCommentsDto::getId)).collect(Collectors.toList());
+        return itemRepository.findByOwnerId(userId).stream().map(item -> findItemById(item.getId(), userId))
+                .sorted(Comparator.comparing(ItemWithBookingAndCommentsDto::getId)).collect(Collectors.toList());
     }
 
     @Override

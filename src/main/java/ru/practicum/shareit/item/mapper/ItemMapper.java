@@ -6,6 +6,7 @@ import ru.practicum.shareit.item.dto.ItemWithBookingAndCommentsDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
+
 @Component
 public class ItemMapper {
     public ItemDto toItemDto(Item item) {
