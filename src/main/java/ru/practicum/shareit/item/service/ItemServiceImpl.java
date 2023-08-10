@@ -23,7 +23,6 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -89,8 +88,28 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemWithBookingAndCommentsDto> findItemsByUser(long userId) {
-        return itemRepository.findByOwnerId(userId).stream().map(item -> findItemById(item.getId(), userId))
-                .sorted(Comparator.comparing(ItemWithBookingAndCommentsDto::getId)).collect(Collectors.toList());
+        List<Item> itemList = itemRepository.findByOwnerIdOrderByIdAsc(userId);
+        List<Booking> bookingList = bookingRepository.findByItemOwnerIdOrderByStartDesc(userId);
+        List<Comment> commentList = commentRepository.findByItemIn(itemList);
+
+
+        List<ItemWithBookingAndCommentsDto> itemWithBookingAndCommentsDtoList = itemList.stream()
+                .map(itemMapper::itemWithBookingAndCommentsDto).collect(Collectors.toList());
+
+        for (Booking booking : bookingList) {
+            for (ItemWithBookingAndCommentsDto itemWithBookingAndCommentsDto : itemWithBookingAndCommentsDtoList) {
+                if (booking.getItem().getId() == itemWithBookingAndCommentsDto.getId()) {
+                    itemWithBookingAndCommentsDto.setNextBooking((bookingMapper.toBookingResponseForItemDto(bookingList
+                            .get(bookingList.size() - 2))));
+                    itemWithBookingAndCommentsDto.setLastBooking(bookingMapper.toBookingResponseForItemDto(bookingList
+                            .get(bookingList.size() - 1)));
+                    itemWithBookingAndCommentsDto.setComments(commentList.stream()
+                            .map(commentMapper::toCommentDto).collect(Collectors.toList()));
+                }
+            }
+        }
+
+        return itemWithBookingAndCommentsDtoList;
     }
 
     @Override
