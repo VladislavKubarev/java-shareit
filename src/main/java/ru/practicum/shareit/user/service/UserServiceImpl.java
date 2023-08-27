@@ -1,7 +1,9 @@
 package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.DuplicateEmailException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
@@ -15,26 +17,28 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserMapper userMapper;
     private final UserRepository userRepository;
 
     @Override
     public UserDto saveUser(UserDto userDto) {
-        User user = userMapper.toUser(userDto);
+        User user = UserMapper.toUser(userDto);
 
-        return userMapper.toUserDto(userRepository.save(user));
+        try {
+            return UserMapper.toUserDto(userRepository.save(user));
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateEmailException("Пользователь с таким email уже существует!");
+        }
     }
 
     @Override
     public List<UserDto> findAllUsers() {
-        return userRepository.findAll().stream().map(userMapper::toUserDto).collect(Collectors.toList());
+        return userRepository.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
 
     @Override
     public UserDto findUserById(long userId) {
-        return userMapper.toUserDto(userRepository.findById(userId).orElseThrow(
+        return UserMapper.toUserDto(userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("Пользователь не найден!")));
-
     }
 
     @Override
@@ -54,6 +58,6 @@ public class UserServiceImpl implements UserService {
             updatedUser.setName(userDto.getName());
         }
 
-        return userMapper.toUserDto(userRepository.save(updatedUser));
+        return UserMapper.toUserDto(userRepository.save(updatedUser));
     }
 }

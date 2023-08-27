@@ -12,8 +12,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CommentDto {
     private long id;
+
     @NotBlank(message = "Текст комментария не может быть пустым!")
     private String text;
+
     private String authorName;
+
     private LocalDateTime created;
 }

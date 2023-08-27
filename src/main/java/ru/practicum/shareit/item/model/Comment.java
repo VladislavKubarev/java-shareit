@@ -15,7 +15,6 @@ import java.util.Objects;
 @Setter
 @ToString
 public class Comment {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")

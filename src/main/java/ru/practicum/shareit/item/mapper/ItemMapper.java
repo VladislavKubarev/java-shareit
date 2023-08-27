@@ -9,16 +9,22 @@ import ru.practicum.shareit.user.model.User;
 
 @Component
 public class ItemMapper {
-    public ItemDto toItemDto(Item item) {
-        return new ItemDto(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable()
-        );
+    public static ItemDto toItemDto(Item item) {
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(item.getId());
+        itemDto.setName(item.getName());
+        itemDto.setDescription(item.getDescription());
+        itemDto.setAvailable(item.getAvailable());
+        if (item.getRequest() == null) {
+            itemDto.setRequestId(null);
+        } else {
+            itemDto.setRequestId(item.getRequest().getId());
+        }
+
+        return itemDto;
     }
 
-    public Item toItem(ItemDto itemDto, User user) {
+    public static Item toItem(ItemDto itemDto, User user) {
         Item item = new Item();
         item.setName(itemDto.getName());
         item.setDescription(itemDto.getDescription());
@@ -28,7 +34,7 @@ public class ItemMapper {
         return item;
     }
 
-    public ItemWithBookingAndCommentsDto itemWithBookingAndCommentsDto(Item item) {
+    public static ItemWithBookingAndCommentsDto itemWithBookingAndCommentsDto(Item item) {
         ItemWithBookingAndCommentsDto itemWithBookingAndCommentsDto = new ItemWithBookingAndCommentsDto();
         itemWithBookingAndCommentsDto.setId(item.getId());
         itemWithBookingAndCommentsDto.setName(item.getName());

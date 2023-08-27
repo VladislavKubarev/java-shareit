@@ -12,8 +12,10 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class UserDto {
     private long id;
+
     @NotBlank(message = "Имя не может быть пустым!")
     private String name;
+    
     @Email(message = "Введен некорректный email!")
     @NotBlank(message = "Email не может быть пустым!")
     private String email;

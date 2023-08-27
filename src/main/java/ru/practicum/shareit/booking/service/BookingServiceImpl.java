@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -24,7 +26,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
-    private final BookingMapper bookingMapper;
+
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
@@ -47,12 +49,12 @@ public class BookingServiceImpl implements BookingService {
 
         validationDate(bookingRequestDto);
 
-        Booking booking = bookingMapper.toBooking(bookingRequestDto);
+        Booking booking = BookingMapper.toBooking(bookingRequestDto);
         booking.setItem(item);
         booking.setBooker(user);
         booking.setStatus(BookingStatus.WAITING);
 
-        return bookingMapper.toBookingDto(bookingRepository.save(booking));
+        return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
     @Override
@@ -74,7 +76,7 @@ public class BookingServiceImpl implements BookingService {
             throw new NotFoundException("Пользователь не является хозяином вещи!");
         }
 
-        return bookingMapper.toBookingDto(bookingRepository.save(booking));
+        return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
     @Override
@@ -86,67 +88,71 @@ public class BookingServiceImpl implements BookingService {
                 () -> new NotFoundException("Пользователь не найден!"));
 
         if (booking.getBooker().getId() == userId || booking.getItem().getOwner().getId() == userId) {
-            return bookingMapper.toBookingDto(booking);
+            return BookingMapper.toBookingDto(booking);
         } else {
             throw new NotFoundException("Пользователь не является хозяином вещи или хозяином бронирования!");
         }
     }
 
     @Override
-    public List<BookingResponseDto> findBookingsByBooker(long bookerId, String state) {
+    public List<BookingResponseDto> findBookingsByBooker(long bookerId, String state, int from, int size) {
         User user = userRepository.findById(bookerId).orElseThrow(
                 () -> new NotFoundException("Пользователь не найден!"));
 
+        Pageable pageable = PageRequest.of(from / size, size);
+
         switch (state.toUpperCase()) {
             case "ALL":
-                return bookingRepository.findByBookerIdOrderByStartDesc(bookerId)
-                        .stream().map(bookingMapper::toBookingDto).collect(Collectors.toList());
+                return bookingRepository.findByBookerIdOrderByStartDesc(bookerId, pageable)
+                        .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case "CURRENT":
                 return bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(bookerId,
-                                LocalDateTime.now(), LocalDateTime.now())
-                        .stream().map(bookingMapper::toBookingDto).collect(Collectors.toList());
+                                LocalDateTime.now(), LocalDateTime.now(), pageable)
+                        .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case "PAST":
-                return bookingRepository.findByBookerIdAndEndIsBeforeOrderByStartDesc(bookerId, LocalDateTime.now())
-                        .stream().map(bookingMapper::toBookingDto).collect(Collectors.toList());
+                return bookingRepository.findByBookerIdAndEndIsBeforeOrderByStartDesc(bookerId, LocalDateTime.now(), pageable)
+                        .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case "FUTURE":
-                return bookingRepository.findByBookerIdAndStartIsAfterOrderByStartDesc(bookerId, LocalDateTime.now())
-                        .stream().map(bookingMapper::toBookingDto).collect(Collectors.toList());
+                return bookingRepository.findByBookerIdAndStartIsAfterOrderByStartDesc(bookerId, LocalDateTime.now(), pageable)
+                        .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case "WAITING":
-                return bookingRepository.findByBookerIdAndStatus(bookerId, BookingStatus.WAITING)
-                        .stream().map(bookingMapper::toBookingDto).collect(Collectors.toList());
+                return bookingRepository.findByBookerIdAndStatus(bookerId, BookingStatus.WAITING, pageable)
+                        .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case "REJECTED":
-                return bookingRepository.findByBookerIdAndStatus(bookerId, BookingStatus.REJECTED)
-                        .stream().map(bookingMapper::toBookingDto).collect(Collectors.toList());
+                return bookingRepository.findByBookerIdAndStatus(bookerId, BookingStatus.REJECTED, pageable)
+                        .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             default:
                 throw new InvalidStateException("Unknown state: UNSUPPORTED_STATUS");
         }
     }
 
     @Override
-    public List<BookingResponseDto> findBookingsByOwner(long ownerId, String state) {
+    public List<BookingResponseDto> findBookingsByOwner(long ownerId, String state, int from, int size) {
         User user = userRepository.findById(ownerId).orElseThrow(
                 () -> new NotFoundException("Пользователь не найден!"));
 
+        Pageable pageable = PageRequest.of(from / size, size);
+
         switch (state.toUpperCase()) {
             case "ALL":
-                return bookingRepository.findByItemOwnerIdOrderByStartDesc(ownerId)
-                        .stream().map(bookingMapper::toBookingDto).collect(Collectors.toList());
+                return bookingRepository.findByItemOwnerIdOrderByStartDesc(ownerId, pageable)
+                        .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case "CURRENT":
                 return bookingRepository.findByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(ownerId,
-                                LocalDateTime.now(), LocalDateTime.now())
-                        .stream().map(bookingMapper::toBookingDto).collect(Collectors.toList());
+                                LocalDateTime.now(), LocalDateTime.now(), pageable)
+                        .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case "PAST":
-                return bookingRepository.findByItemOwnerIdAndEndIsBeforeOrderByStartDesc(ownerId, LocalDateTime.now())
-                        .stream().map(bookingMapper::toBookingDto).collect(Collectors.toList());
+                return bookingRepository.findByItemOwnerIdAndEndIsBeforeOrderByStartDesc(ownerId, LocalDateTime.now(), pageable)
+                        .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case "FUTURE":
-                return bookingRepository.findByItemOwnerIdAndStartIsAfterOrderByStartDesc(ownerId, LocalDateTime.now())
-                        .stream().map(bookingMapper::toBookingDto).collect(Collectors.toList());
+                return bookingRepository.findByItemOwnerIdAndStartIsAfterOrderByStartDesc(ownerId, LocalDateTime.now(), pageable)
+                        .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case "WAITING":
-                return bookingRepository.findByItemOwnerIdAndStatus(ownerId, BookingStatus.WAITING)
-                        .stream().map(bookingMapper::toBookingDto).collect(Collectors.toList());
+                return bookingRepository.findByItemOwnerIdAndStatus(ownerId, BookingStatus.WAITING, pageable)
+                        .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case "REJECTED":
-                return bookingRepository.findByItemOwnerIdAndStatus(ownerId, BookingStatus.REJECTED)
-                        .stream().map(bookingMapper::toBookingDto).collect(Collectors.toList());
+                return bookingRepository.findByItemOwnerIdAndStatus(ownerId, BookingStatus.REJECTED, pageable)
+                        .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             default:
                 throw new InvalidStateException("Unknown state: UNSUPPORTED_STATUS");
         }
