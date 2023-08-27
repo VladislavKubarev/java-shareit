@@ -18,14 +18,11 @@ public class ItemRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "request_id")
     private Long id;
-
     @Column(nullable = false)
     private String description;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     @JoinColumn(name = "requester_id")
     private User requester;
-
     private LocalDateTime created;
 }

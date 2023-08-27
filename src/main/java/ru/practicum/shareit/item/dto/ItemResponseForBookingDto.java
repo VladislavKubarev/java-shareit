@@ -9,6 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ItemResponseForBookingDto {
     private long id;
-
     private String name;
 }
