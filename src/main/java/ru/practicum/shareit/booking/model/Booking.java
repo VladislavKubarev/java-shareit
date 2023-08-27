@@ -21,23 +21,18 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "booking_id")
     private Long id;
-
     @Column(name = "start_date", nullable = false)
     private LocalDateTime start;
-
     @Column(name = "end_date", nullable = false)
     private LocalDateTime end;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     @JoinColumn(name = "item_id")
     private Item item;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     @JoinColumn(name = "booker_id")
     private User booker;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private BookingStatus status;
@@ -49,6 +44,7 @@ public class Booking {
         if (!(o instanceof Booking)) return false;
         return id != null && id.equals(((Booking) o).getId());
     }
+
     @Generated
     @Override
     public int hashCode() {
