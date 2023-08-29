@@ -43,7 +43,7 @@ public class ItemJsonTests {
     }
 
     @Test
-    void ItemWithBookingAndCommentsDtoTest() throws Exception {
+    void itemWithBookingAndCommentsDtoTest() throws Exception {
         ItemWithBookingAndCommentsDto itemWithBookingAndCommentsDto = new ItemWithBookingAndCommentsDto();
         itemWithBookingAndCommentsDto.setId(1);
         itemWithBookingAndCommentsDto.setName("Лодка");

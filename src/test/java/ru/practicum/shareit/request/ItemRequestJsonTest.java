@@ -22,7 +22,7 @@ public class ItemRequestJsonTest {
     private JacksonTester<ItemResponseDto> responseJacksonTester;
 
     @Test
-    void ItemRequestDtoTest() throws Exception {
+    void itemRequestDtoTest() throws Exception {
         ItemRequestDto itemRequestDto = new ItemRequestDto("Ищу девушку");
 
         JsonContent<ItemRequestDto> result = requestJacksonTester.write(itemRequestDto);
@@ -32,7 +32,7 @@ public class ItemRequestJsonTest {
     }
 
     @Test
-    void ItemResponseDtoTest() throws Exception {
+    void itemResponseDtoTest() throws Exception {
         ItemResponseDto itemResponseDto = new ItemResponseDto();
         itemResponseDto.setId(1);
         itemResponseDto.setDescription("Ищу девушку");
