@@ -106,7 +106,7 @@ public class BookingServiceImpl implements BookingService {
                 return bookingRepository.findByBookerIdOrderByStartDesc(bookerId, pageable)
                         .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case "CURRENT":
-                return bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(bookerId,
+                return bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfter(bookerId,
                                 LocalDateTime.now(), LocalDateTime.now(), pageable)
                         .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case "PAST":
@@ -138,7 +138,7 @@ public class BookingServiceImpl implements BookingService {
                 return bookingRepository.findByItemOwnerIdOrderByStartDesc(ownerId, pageable)
                         .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case "CURRENT":
-                return bookingRepository.findByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(ownerId,
+                return bookingRepository.findByItemOwnerIdAndStartIsBeforeAndEndIsAfter(ownerId,
                                 LocalDateTime.now(), LocalDateTime.now(), pageable)
                         .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
             case "PAST":

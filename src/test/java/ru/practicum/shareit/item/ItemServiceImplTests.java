@@ -298,14 +298,13 @@ public class ItemServiceImplTests {
         Booking lastBooking = createBooking(
                 1, LocalDateTime.now().minusDays(10), LocalDateTime.now().minusDays(5), itemsList.get(0), user2, BookingStatus.APPROVED);
 
-        List<Booking> itemBookingList = List.of(nextBooking, lastBooking);
-
         List<Comment> commentList = List.of(
                 createComment(1, "Отлично!", itemsList.get(0), user1, LocalDateTime.now()),
                 createComment(2, "Не понравился!", itemsList.get(0), user2, LocalDateTime.now()));
 
         when(itemRepository.findByOwnerIdOrderByIdAsc(eq(owner.getId()), any(Pageable.class))).thenReturn(itemsList);
-        when(bookingRepository.findByItemOwnerIdOrderByStartDesc(eq(owner.getId()), any(Pageable.class))).thenReturn(itemBookingList);
+        when(bookingRepository.findByItemInAndStartLessThanEqualOrderByStartDesc(eq(itemsList), any(LocalDateTime.class))).thenReturn(List.of(lastBooking));
+        when(bookingRepository.findByItemInAndStartGreaterThanEqualOrderByStartAsc(eq(itemsList), any(LocalDateTime.class))).thenReturn(List.of(nextBooking));
         when(commentRepository.findByItemIn(itemsList)).thenReturn(commentList);
 
         List<ItemWithBookingAndCommentsDto> actualItems = itemServiceImpl.findItemsByUser(owner.getId(), 0, 5);
@@ -335,10 +334,11 @@ public class ItemServiceImplTests {
         assertThat(actualItems.get(0).getComments().get(1).getText(), equalTo(commentList.get(1).getText()));
         assertThat(actualItems.get(0).getComments().get(1).getAuthorName(), equalTo(commentList.get(1).getAuthor().getName()));
 
-        assertNull(actualItems.get(1).getComments());
+        assertTrue(actualItems.get(1).getComments().isEmpty());
 
         verify(itemRepository, times(1)).findByOwnerIdOrderByIdAsc(eq(owner.getId()), any(Pageable.class));
-        verify(bookingRepository, times(1)).findByItemOwnerIdOrderByStartDesc(eq(owner.getId()), any(Pageable.class));
+        verify(bookingRepository, times(1)).findByItemInAndStartLessThanEqualOrderByStartDesc(eq(itemsList), any(LocalDateTime.class));
+        verify(bookingRepository, times(1)).findByItemInAndStartGreaterThanEqualOrderByStartAsc(eq(itemsList), any(LocalDateTime.class));
         verify(commentRepository, times(1)).findByItemIn(itemsList);
     }
 

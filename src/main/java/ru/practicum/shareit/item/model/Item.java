@@ -23,12 +23,10 @@ public class Item {
     private String description;
     @Column(name = "is_available", nullable = false)
     private Boolean available;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
+    @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
+    @ManyToOne
     @JoinColumn(name = "request_id")
     private ItemRequest request;
 

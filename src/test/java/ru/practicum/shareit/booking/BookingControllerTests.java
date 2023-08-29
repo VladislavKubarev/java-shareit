@@ -48,7 +48,12 @@ public class BookingControllerTests {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(bookingResponseDto.getId()));
+                .andExpect(jsonPath("$.id").value(bookingResponseDto.getId()))
+                .andExpect(jsonPath("$.start").value(bookingResponseDto.getStart()))
+                .andExpect(jsonPath("$.end").value(bookingResponseDto.getEnd()))
+                .andExpect(jsonPath("$.status").value(bookingResponseDto.getStatus().toString()))
+                .andExpect(jsonPath("$.booker").value(bookingResponseDto.getBooker()))
+                .andExpect(jsonPath("$.item").value(bookingResponseDto.getItem()));
 
         verify(bookingService, times(1)).createBooking(eq(userId), any(BookingRequestDto.class));
     }
@@ -65,7 +70,12 @@ public class BookingControllerTests {
                         .header("X-Sharer-User-Id", userId)
                         .param("approved", "true"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(bookingResponseDto.getId()));
+                .andExpect(jsonPath("$.id").value(bookingResponseDto.getId()))
+                .andExpect(jsonPath("$.start").value(bookingResponseDto.getStart()))
+                .andExpect(jsonPath("$.end").value(bookingResponseDto.getEnd()))
+                .andExpect(jsonPath("$.status").value(bookingResponseDto.getStatus().toString()))
+                .andExpect(jsonPath("$.booker").value(bookingResponseDto.getBooker()))
+                .andExpect(jsonPath("$.item").value(bookingResponseDto.getItem()));
 
         verify(bookingService, times(1)).approveBooking(userId, bookingResponseDto.getId(), true);
     }
@@ -81,7 +91,12 @@ public class BookingControllerTests {
         mockMvc.perform(get("/bookings/{id}", bookingResponseDto.getId())
                         .header("X-Sharer-User-Id", userId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(bookingResponseDto.getId()));
+                .andExpect(jsonPath("$.id").value(bookingResponseDto.getId()))
+                .andExpect(jsonPath("$.start").value(bookingResponseDto.getStart()))
+                .andExpect(jsonPath("$.end").value(bookingResponseDto.getEnd()))
+                .andExpect(jsonPath("$.status").value(bookingResponseDto.getStatus().toString()))
+                .andExpect(jsonPath("$.booker").value(bookingResponseDto.getBooker()))
+                .andExpect(jsonPath("$.item").value(bookingResponseDto.getItem()));
 
         verify(bookingService, times(1)).findBookingById(userId, bookingResponseDto.getId());
     }
@@ -98,7 +113,17 @@ public class BookingControllerTests {
                         .header("X-Sharer-User-Id", userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(bookingList.get(0).getId()))
-                .andExpect(jsonPath("$[1].id").value(bookingList.get(1).getId()));
+                .andExpect(jsonPath("$[0].start").value(bookingList.get(0).getStart()))
+                .andExpect(jsonPath("$[0].end").value(bookingList.get(0).getEnd()))
+                .andExpect(jsonPath("$[0].status").value(bookingList.get(0).getStatus().toString()))
+                .andExpect(jsonPath("$[0].booker").value(bookingList.get(0).getBooker()))
+                .andExpect(jsonPath("$[0].item").value(bookingList.get(0).getItem()))
+                .andExpect(jsonPath("$[1].id").value(bookingList.get(1).getId()))
+                .andExpect(jsonPath("$[1].start").value(bookingList.get(1).getStart()))
+                .andExpect(jsonPath("$[1].end").value(bookingList.get(1).getEnd()))
+                .andExpect(jsonPath("$[1].status").value(bookingList.get(1).getStatus().toString()))
+                .andExpect(jsonPath("$[1].booker").value(bookingList.get(1).getBooker()))
+                .andExpect(jsonPath("$[1].item").value(bookingList.get(1).getItem()));
 
         verify(bookingService, times(1)).findBookingsByBooker(eq(userId), eq("ALL"), anyInt(), anyInt());
     }
@@ -115,7 +140,17 @@ public class BookingControllerTests {
                         .header("X-Sharer-User-Id", ownerId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(bookingList.get(0).getId()))
-                .andExpect(jsonPath("$[1].id").value(bookingList.get(1).getId()));
+                .andExpect(jsonPath("$[0].start").value(bookingList.get(0).getStart()))
+                .andExpect(jsonPath("$[0].end").value(bookingList.get(0).getEnd()))
+                .andExpect(jsonPath("$[0].status").value(bookingList.get(0).getStatus().toString()))
+                .andExpect(jsonPath("$[0].booker").value(bookingList.get(0).getBooker()))
+                .andExpect(jsonPath("$[0].item").value(bookingList.get(0).getItem()))
+                .andExpect(jsonPath("$[1].id").value(bookingList.get(1).getId()))
+                .andExpect(jsonPath("$[1].start").value(bookingList.get(1).getStart()))
+                .andExpect(jsonPath("$[1].end").value(bookingList.get(1).getEnd()))
+                .andExpect(jsonPath("$[1].status").value(bookingList.get(1).getStatus().toString()))
+                .andExpect(jsonPath("$[1].booker").value(bookingList.get(1).getBooker()))
+                .andExpect(jsonPath("$[1].item").value(bookingList.get(1).getItem()));
 
         verify(bookingService, times(1)).findBookingsByOwner(eq(ownerId), eq("ALL"), anyInt(), anyInt());
     }

@@ -45,7 +45,11 @@ public class ItemControllerTests {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(itemDto.getId()));
+                .andExpect(jsonPath("$.id").value(itemDto.getId()))
+                .andExpect(jsonPath("$.name").value(itemDto.getName()))
+                .andExpect(jsonPath("$.description").value(itemDto.getDescription()))
+                .andExpect(jsonPath("$.available").value(itemDto.getAvailable()))
+                .andExpect(jsonPath("$.requestId").value(itemDto.getRequestId()));
 
         verify(itemService, times(1)).saveItem(eq(ownerId), any(ItemDto.class));
     }
@@ -65,7 +69,11 @@ public class ItemControllerTests {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(newItemDto.getId()));
+                .andExpect(jsonPath("$.id").value(newItemDto.getId()))
+                .andExpect(jsonPath("$.name").value(newItemDto.getName()))
+                .andExpect(jsonPath("$.description").value(newItemDto.getDescription()))
+                .andExpect(jsonPath("$.available").value(newItemDto.getAvailable()))
+                .andExpect(jsonPath("$.requestId").value(newItemDto.getRequestId()));
 
         verify(itemService, times(1)).updateItem(any(ItemDto.class), eq(itemId), eq(ownerId));
     }
@@ -82,7 +90,13 @@ public class ItemControllerTests {
         mockMvc.perform(get("/items/{id}", itemId)
                         .header("X-Sharer-User-Id", userId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(itemDto.getId()));
+                .andExpect(jsonPath("$.id").value(itemDto.getId()))
+                .andExpect(jsonPath("$.name").value(itemDto.getName()))
+                .andExpect(jsonPath("$.description").value(itemDto.getDescription()))
+                .andExpect(jsonPath("$.available").value(itemDto.getAvailable()))
+                .andExpect(jsonPath("$.nextBooking").value(itemDto.getNextBooking()))
+                .andExpect(jsonPath("$.lastBooking").value(itemDto.getLastBooking()))
+                .andExpect(jsonPath("$.comments").value(itemDto.getComments()));
 
         verify(itemService, times(1)).findItemById(itemId, userId);
     }
@@ -101,7 +115,19 @@ public class ItemControllerTests {
                         .header("X-Sharer-User-Id", userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(itemDto1.getId()))
-                .andExpect(jsonPath("$[1].id").value(itemDto2.getId()));
+                .andExpect(jsonPath("$[0].name").value(itemDto1.getName()))
+                .andExpect(jsonPath("$[0].description").value(itemDto1.getDescription()))
+                .andExpect(jsonPath("$[0].available").value(itemDto1.getAvailable()))
+                .andExpect(jsonPath("$[0].nextBooking").value(itemDto1.getNextBooking()))
+                .andExpect(jsonPath("$[0].lastBooking").value(itemDto1.getLastBooking()))
+                .andExpect(jsonPath("$[0].comments").value(itemDto1.getComments()))
+                .andExpect(jsonPath("$[1].id").value(itemDto2.getId()))
+                .andExpect(jsonPath("$[1].name").value(itemDto2.getName()))
+                .andExpect(jsonPath("$[1].description").value(itemDto2.getDescription()))
+                .andExpect(jsonPath("$[1].available").value(itemDto2.getAvailable()))
+                .andExpect(jsonPath("$[1].nextBooking").value(itemDto2.getNextBooking()))
+                .andExpect(jsonPath("$[1].lastBooking").value(itemDto2.getLastBooking()))
+                .andExpect(jsonPath("$[1].comments").value(itemDto2.getComments()));
 
         verify(itemService, times(1)).findItemsByUser(eq(userId), anyInt(), anyInt());
     }
@@ -120,7 +146,15 @@ public class ItemControllerTests {
                         .param("text", text))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(itemDto1.getId()))
-                .andExpect(jsonPath("$[1].id").value(itemDto2.getId()));
+                .andExpect(jsonPath("$[0].name").value(itemDto1.getName()))
+                .andExpect(jsonPath("$[0].description").value(itemDto1.getDescription()))
+                .andExpect(jsonPath("$[0].available").value(itemDto1.getAvailable()))
+                .andExpect(jsonPath("$[0].requestId").value(itemDto1.getRequestId()))
+                .andExpect(jsonPath("$[1].id").value(itemDto2.getId()))
+                .andExpect(jsonPath("$[1].name").value(itemDto2.getName()))
+                .andExpect(jsonPath("$[1].description").value(itemDto2.getDescription()))
+                .andExpect(jsonPath("$[1].available").value(itemDto2.getAvailable()))
+                .andExpect(jsonPath("$[1].requestId").value(itemDto2.getRequestId()));
 
         verify(itemService, times(1)).searchItems(eq(text), anyInt(), anyInt());
     }
@@ -140,7 +174,9 @@ public class ItemControllerTests {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(commentDto.getId()));
+                .andExpect(jsonPath("$.id").value(commentDto.getId()))
+                .andExpect(jsonPath("$.text").value(commentDto.getText()))
+                .andExpect(jsonPath("$.authorName").value(commentDto.getAuthorName()));
 
         verify(itemService, times(1)).addComment(eq(userId), any(CommentDto.class), eq(itemId));
     }

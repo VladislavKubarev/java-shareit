@@ -30,13 +30,13 @@ import static org.mockito.Mockito.*;
 public class ItemRequestServiceImplTests {
 
     @Mock
-    ItemRequestRepository itemRequestRepository;
+    private ItemRequestRepository itemRequestRepository;
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Mock
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @InjectMocks
-    ItemRequestServiceImpl itemRequestServiceImpl;
+    private ItemRequestServiceImpl itemRequestServiceImpl;
 
     @Test
     void createValidRequestTest() {

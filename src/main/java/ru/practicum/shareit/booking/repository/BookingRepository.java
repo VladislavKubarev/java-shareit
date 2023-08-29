@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.item.model.Item;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,8 +15,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByBookerIdOrderByStartDesc(long bookerId, Pageable pageable);
 
-    List<Booking> findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(long bookerId, LocalDateTime start,
-                                                                              LocalDateTime end, Pageable pageable);
+    List<Booking> findByBookerIdAndStartIsBeforeAndEndIsAfter(long bookerId, LocalDateTime start,
+                                                              LocalDateTime end, Pageable pageable);
 
     List<Booking> findByBookerIdAndEndIsBeforeOrderByStartDesc(long bookerId, LocalDateTime end, Pageable pageable);
 
@@ -25,8 +26,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByItemOwnerIdOrderByStartDesc(long ownerId, Pageable pageable);
 
-    List<Booking> findByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(long ownerId, LocalDateTime start,
-                                                                                 LocalDateTime end, Pageable pageable);
+    List<Booking> findByItemOwnerIdAndStartIsBeforeAndEndIsAfter(long ownerId, LocalDateTime start,
+                                                                 LocalDateTime end, Pageable pageable);
 
     List<Booking> findByItemOwnerIdAndEndIsBeforeOrderByStartDesc(long ownerId, LocalDateTime end, Pageable pageable);
 
@@ -42,4 +43,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByItemIdAndBookerIdAndEndIsBeforeAndStatus(long itemId, long bookerId, LocalDateTime end,
                                                                  BookingStatus status);
+
+    List<Booking> findByItemInAndStartLessThanEqualOrderByStartDesc(List<Item> itemList, LocalDateTime start);
+
+    List<Booking> findByItemInAndStartGreaterThanEqualOrderByStartAsc(List<Item> itemList, LocalDateTime start);
 }

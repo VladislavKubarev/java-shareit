@@ -39,7 +39,9 @@ public class UserControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(userDto.getId()));
+                .andExpect(jsonPath("$.id").value(userDto.getId()))
+                .andExpect(jsonPath("$.name").value(userDto.getName()))
+                .andExpect(jsonPath("$.email").value(userDto.getEmail()));
 
         verify(userService, times(1)).saveUser(any(UserDto.class));
     }
@@ -70,7 +72,9 @@ public class UserControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(userDto.getId()));
+                .andExpect(jsonPath("$.id").value(userDto.getId()))
+                .andExpect(jsonPath("$.name").value(userDto.getName()))
+                .andExpect(jsonPath("$.email").value(userDto.getEmail()));
 
         verify(userService, times(1)).findUserById(id);
     }
@@ -96,7 +100,9 @@ public class UserControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id));
+                .andExpect(jsonPath("$.id").value(newUserDto.getId()))
+                .andExpect(jsonPath("$.name").value(newUserDto.getName()))
+                .andExpect(jsonPath("$.email").value(newUserDto.getEmail()));
 
         verify(userService, times(1)).updateUser(any(UserDto.class), eq(id));
     }

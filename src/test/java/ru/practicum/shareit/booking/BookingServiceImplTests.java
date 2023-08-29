@@ -34,13 +34,13 @@ import static org.mockito.Mockito.*;
 public class BookingServiceImplTests {
 
     @Mock
-    BookingRepository bookingRepository;
+    private BookingRepository bookingRepository;
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Mock
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @InjectMocks
-    BookingServiceImpl bookingServiceImpl;
+    private BookingServiceImpl bookingServiceImpl;
 
     @Test
     void createValidBooking() {
@@ -344,7 +344,7 @@ public class BookingServiceImplTests {
 
         when(userRepository.findById(booker.getId())).thenReturn(Optional.of(booker));
         when(bookingRepository.findByBookerIdOrderByStartDesc(eq(booker.getId()), any(Pageable.class))).thenReturn(bookingsList);
-        when(bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(eq(booker.getId()), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(bookingsList);
+        when(bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfter(eq(booker.getId()), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(bookingsList);
         when(bookingRepository.findByBookerIdAndEndIsBeforeOrderByStartDesc(eq(booker.getId()), any(LocalDateTime.class), any(Pageable.class))).thenReturn(bookingsList);
         when(bookingRepository.findByBookerIdAndStartIsAfterOrderByStartDesc(eq(booker.getId()), any(LocalDateTime.class), any(Pageable.class))).thenReturn(bookingsList);
         when(bookingRepository.findByBookerIdAndStatus(eq(booker.getId()), eq(BookingStatus.WAITING), any(Pageable.class))).thenReturn(bookingsList);
@@ -380,7 +380,7 @@ public class BookingServiceImplTests {
 
         when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
         when(bookingRepository.findByItemOwnerIdOrderByStartDesc(eq(owner.getId()), any(Pageable.class))).thenReturn(bookingsList);
-        when(bookingRepository.findByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(eq(owner.getId()), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(bookingsList);
+        when(bookingRepository.findByItemOwnerIdAndStartIsBeforeAndEndIsAfter(eq(owner.getId()), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(bookingsList);
         when(bookingRepository.findByItemOwnerIdAndEndIsBeforeOrderByStartDesc(eq(owner.getId()), any(LocalDateTime.class), any(Pageable.class))).thenReturn(bookingsList);
         when(bookingRepository.findByItemOwnerIdAndStartIsAfterOrderByStartDesc(eq(owner.getId()), any(LocalDateTime.class), any(Pageable.class))).thenReturn(bookingsList);
         when(bookingRepository.findByItemOwnerIdAndStatus(eq(owner.getId()), eq(BookingStatus.WAITING), any(Pageable.class))).thenReturn(bookingsList);

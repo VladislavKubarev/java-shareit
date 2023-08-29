@@ -49,7 +49,9 @@ public class ItemRequestControllerTests {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(itemResponseDto.getId()));
+                .andExpect(jsonPath("$.id").value(itemResponseDto.getId()))
+                .andExpect(jsonPath("$.description").value(itemResponseDto.getDescription()))
+                .andExpect(jsonPath("$.items").value(itemResponseDto.getItems()));
 
         verify(itemRequestService, times(1)).createRequest(eq(userId), any(ItemRequestDto.class));
     }
@@ -68,7 +70,11 @@ public class ItemRequestControllerTests {
                         .header("X-Sharer-User-Id", userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(itemResponseList.get(0).getId()))
-                .andExpect(jsonPath("$[1].id").value((itemResponseList.get(1).getId())));
+                .andExpect(jsonPath("$[0].description").value(itemResponseList.get(0).getDescription()))
+                .andExpect(jsonPath("$[0].items").value(itemResponseList.get(0).getItems()))
+                .andExpect(jsonPath("$[1].id").value((itemResponseList.get(1).getId())))
+                .andExpect(jsonPath("$[1].description").value(itemResponseList.get(1).getDescription()))
+                .andExpect(jsonPath("$[1].items").value(itemResponseList.get(1).getItems()));
 
         verify(itemRequestService, times(1)).findRequestsByRequester(userId);
     }
@@ -87,7 +93,11 @@ public class ItemRequestControllerTests {
                         .header("X-Sharer-User-Id", userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(itemResponseList.get(0).getId()))
-                .andExpect(jsonPath("$[1].id").value((itemResponseList.get(1).getId())));
+                .andExpect(jsonPath("$[0].description").value(itemResponseList.get(0).getDescription()))
+                .andExpect(jsonPath("$[0].items").value(itemResponseList.get(0).getItems()))
+                .andExpect(jsonPath("$[1].id").value((itemResponseList.get(1).getId())))
+                .andExpect(jsonPath("$[1].description").value(itemResponseList.get(1).getDescription()))
+                .andExpect(jsonPath("$[1].items").value(itemResponseList.get(1).getItems()));
 
         verify(itemRequestService, times(1)).findAllRequests(eq(userId), anyInt(), anyInt());
     }
@@ -103,7 +113,9 @@ public class ItemRequestControllerTests {
         mockMvc.perform(get("/requests/{id}", itemResponseDto.getId())
                         .header("X-Sharer-User-Id", userId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(itemResponseDto.getId()));
+                .andExpect(jsonPath("$.id").value(itemResponseDto.getId()))
+                .andExpect(jsonPath("$.description").value(itemResponseDto.getDescription()))
+                .andExpect(jsonPath("$.items").value(itemResponseDto.getItems()));
 
         verify(itemRequestService, times(1)).findRequestById(userId, itemResponseDto.getId());
     }

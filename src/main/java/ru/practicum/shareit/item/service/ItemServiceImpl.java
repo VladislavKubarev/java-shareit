@@ -26,8 +26,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,6 +44,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto saveItem(long userId, ItemDto itemDto) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException("Пользователь не найден!"));
+
         Item item = ItemMapper.toItem(itemDto, user);
 
         if (itemDto.getRequestId() != null) {
@@ -98,22 +98,37 @@ public class ItemServiceImpl implements ItemService {
         Pageable pageable = PageRequest.of(from / size, size);
 
         List<Item> itemList = itemRepository.findByOwnerIdOrderByIdAsc(userId, pageable);
-        List<Booking> bookingList = bookingRepository.findByItemOwnerIdOrderByStartDesc(userId, pageable);
-        List<Comment> commentList = commentRepository.findByItemIn(itemList);
+
+        Map<Long, List<Booking>> lastBookingsMap = bookingRepository.findByItemInAndStartLessThanEqualOrderByStartDesc(
+                        itemList, LocalDateTime.now())
+                .stream().collect(Collectors.groupingBy(booking -> booking.getItem().getId(), Collectors.toList()));
+
+        Map<Long, List<Booking>> nextBookingsMap = bookingRepository.findByItemInAndStartGreaterThanEqualOrderByStartAsc(
+                        itemList, LocalDateTime.now())
+                .stream().collect(Collectors.groupingBy(booking -> booking.getItem().getId(), Collectors.toList()));
+
+        Map<Long, List<Comment>> commentMap = commentRepository.findByItemIn(itemList)
+                .stream().collect(Collectors.groupingBy(comment -> comment.getItem().getId(), Collectors.toList()));
 
         List<ItemWithBookingAndCommentsDto> itemWithBookingAndCommentsDtoList = itemList.stream()
                 .map(ItemMapper::itemWithBookingAndCommentsDto).collect(Collectors.toList());
 
-        for (Booking booking : bookingList) {
-            for (ItemWithBookingAndCommentsDto itemWithBookingAndCommentsDto : itemWithBookingAndCommentsDtoList) {
-                if (booking.getItem().getId() == itemWithBookingAndCommentsDto.getId()) {
-                    itemWithBookingAndCommentsDto.setNextBooking((BookingMapper.toBookingResponseForItemDto(bookingList
-                            .get(bookingList.size() - 2))));
-                    itemWithBookingAndCommentsDto.setLastBooking(BookingMapper.toBookingResponseForItemDto(bookingList
-                            .get(bookingList.size() - 1)));
-                    itemWithBookingAndCommentsDto.setComments(commentList.stream()
-                            .map(CommentMapper::toCommentDto).collect(Collectors.toList()));
+        for (ItemWithBookingAndCommentsDto item : itemWithBookingAndCommentsDtoList) {
+            List<Booking> lastBookingsList = lastBookingsMap.get(item.getId());
+            List<Booking> nextBookingsList = nextBookingsMap.get(item.getId());
+            List<Comment> commentsList = commentMap.get(item.getId());
+            if (Objects.nonNull(lastBookingsList) && !lastBookingsList.isEmpty()) {
+                item.setLastBooking(BookingMapper.toBookingResponseForItemDto(lastBookingsList.get(0)));
+            }
+            if (Objects.nonNull(nextBookingsList) && !nextBookingsList.isEmpty()) {
+                if (nextBookingsList.get(0).getStatus().equals(BookingStatus.APPROVED)) {
+                    item.setNextBooking(BookingMapper.toBookingResponseForItemDto(nextBookingsList.get(0)));
                 }
+            }
+            if (Objects.nonNull(commentsList)) {
+                item.setComments(commentsList.stream().map(CommentMapper::toCommentDto).collect(Collectors.toList()));
+            } else {
+                item.setComments(Collections.emptyList());
             }
         }
 
