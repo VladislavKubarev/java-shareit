@@ -12,14 +12,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookingRequestDto {
-
     @Future(message = "Дата/время старта бронирования не может быть в прошлом!")
     @NotNull(message = "Дата/время старта бронирования не может быть пустой!")
     private LocalDateTime start;
-
     @Future(message = "Дата/время окончания бронирования не может быть в прошлом!")
     @NotNull(message = "Дата/время окончания бронирования не может быть пустой!")
     private LocalDateTime end;
-
     private long itemId;
 }

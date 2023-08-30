@@ -16,13 +16,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
-
     @Column(name = "user_name", nullable = false)
     private String name;
-
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Generated
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -30,6 +29,7 @@ public class User {
         return id != null && id.equals(((User) o).getId());
     }
 
+    @Generated
     @Override
     public int hashCode() {
         return Objects.hash(id);

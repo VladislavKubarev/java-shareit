@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.model;
 
+import lombok.Generated;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,28 +16,22 @@ import java.util.Objects;
 @Setter
 @ToString
 public class Comment {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
     private Long id;
-
     @Column(nullable = false)
     private String text;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
+    @ManyToOne(optional = false)
     @JoinColumn(name = "item_id")
     private Item item;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
+    @ManyToOne(optional = false)
     @JoinColumn(name = "author_id")
     private User author;
-
     @Column(nullable = false)
     private LocalDateTime created;
 
+    @Generated
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -44,6 +39,7 @@ public class Comment {
         return id != null && id.equals(((Comment) o).getId());
     }
 
+    @Generated
     @Override
     public int hashCode() {
         return Objects.hash(id);
