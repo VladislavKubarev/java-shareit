@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -15,6 +16,7 @@ import javax.validation.constraints.Min;
 @RequiredArgsConstructor
 @RequestMapping(path = "/bookings")
 @Validated
+@Slf4j
 public class BookingController {
 
     private final BookingClient bookingClient;
@@ -22,18 +24,21 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<Object> createBooking(@RequestHeader("X-Sharer-User-Id") long userId,
                                                 @Valid @RequestBody BookingRequestDto bookingDto) {
+        log.info("Получен POST-запрос на создание бронирования от пользователя с ID={}", userId);
         return bookingClient.createBooking(userId, bookingDto);
     }
 
     @PatchMapping("/{bookingId}")
     public ResponseEntity<Object> approveBooking(@RequestHeader("X-Sharer-User-Id") long userId,
                                                  @PathVariable long bookingId, @RequestParam boolean approved) {
+        log.info("Получен PATCH-запрос на подтверждения бронирования с ID={}", bookingId);
         return bookingClient.approveBooking(userId, bookingId, approved);
     }
 
     @GetMapping("/{bookingId}")
     public ResponseEntity<Object> findBookingById(@RequestHeader("X-Sharer-User-Id") long userId,
                                                   @PathVariable long bookingId) {
+        log.info("Получен GET-запрос на получение бронирования с ID={}", bookingId);
         return bookingClient.findBookingById(userId, bookingId);
     }
 
@@ -42,6 +47,8 @@ public class BookingController {
                                                        @RequestParam(defaultValue = "ALL") String state,
                                                        @RequestParam(required = false, defaultValue = "0") @Min(0) int from,
                                                        @RequestParam(required = false, defaultValue = "10") @Min(1) int size) {
+        log.info("Получен GET-запрос на получение списка всех бронирований вещей пользователя с ID={} " +
+                "и параметром STATE={}", userId, state);
         return bookingClient.findBookingsByBooker(userId, state, from, size);
     }
 
@@ -50,6 +57,8 @@ public class BookingController {
                                                       @RequestParam(defaultValue = "ALL") String state,
                                                       @RequestParam(required = false, defaultValue = "0") @Min(0) int from,
                                                       @RequestParam(required = false, defaultValue = "10") @Min(1) int size) {
+        log.info("Получен GET-запрос на получение списка всех бронирований вещей пользователя с ID={} " +
+                "и параметром STATE={}", ownerId, state);
         return bookingClient.findBookingsByOwner(ownerId, state, from, size);
     }
 }

@@ -136,7 +136,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchItems(long userId, String text, int from, int size) {
+    public List<ItemDto> searchItems(String text, int from, int size) {
         Pageable pageable = PageRequest.of(from / size, size);
 
         if (!text.isBlank()) {

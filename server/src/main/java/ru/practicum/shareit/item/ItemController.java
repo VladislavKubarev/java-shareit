@@ -7,7 +7,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemWithBookingAndCommentsDto;
 import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
@@ -36,17 +35,16 @@ public class ItemController {
 
     @GetMapping
     public List<ItemWithBookingAndCommentsDto> findItemsByUser(@RequestHeader("X-Sharer-User-Id") long userId,
-                                                               @RequestParam(required = false, defaultValue = "0") @Min(0) int from,
-                                                               @RequestParam(required = false, defaultValue = "10") @Min(1) int size) {
+                                                               @RequestParam(required = false, defaultValue = "0") int from,
+                                                               @RequestParam(required = false, defaultValue = "10") int size) {
         return itemService.findItemsByUser(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItems(@RequestHeader("X-Sharer-User-Id") long userId,
-                                     @RequestParam String text,
-                                     @RequestParam(required = false, defaultValue = "0") @Min(0) int from,
-                                     @RequestParam(required = false, defaultValue = "10") @Min(1) int size) {
-        return itemService.searchItems(userId, text, from, size);
+    public List<ItemDto> searchItems(@RequestParam String text,
+                                     @RequestParam(required = false, defaultValue = "0") int from,
+                                     @RequestParam(required = false, defaultValue = "10") int size) {
+        return itemService.searchItems(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
