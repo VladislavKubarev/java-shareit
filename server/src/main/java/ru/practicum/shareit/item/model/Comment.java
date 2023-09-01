@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.model;
 
+import lombok.Generated;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -30,6 +31,7 @@ public class Comment {
     @Column(nullable = false)
     private LocalDateTime created;
 
+    @Generated
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -37,7 +39,7 @@ public class Comment {
         return id != null && id.equals(((Comment) o).getId());
     }
 
-
+    @Generated
     @Override
     public int hashCode() {
         return Objects.hash(id);

@@ -30,7 +30,7 @@ public class Item {
     @JoinColumn(name = "request_id")
     private ItemRequest request;
 
-
+    @Generated
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -38,6 +38,7 @@ public class Item {
         return id != null && id.equals(((Item) o).getId());
     }
 
+    @Generated
     @Override
     public int hashCode() {
         return Objects.hash(id);
